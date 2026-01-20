@@ -1205,6 +1205,7 @@ bool Window::eventFilter(QObject *watched, QEvent *event)
                 break;
 
             case Qt::Key_F:
+            case Qt::Key_D:
                 if (ke->modifiers().testFlag(Qt::ControlModifier)) {
                     QKeyEvent syn(QEvent::KeyPress,
                                   Qt::Key_PageDown,
@@ -1216,6 +1217,7 @@ bool Window::eventFilter(QObject *watched, QEvent *event)
                 break;
 
             case Qt::Key_B:
+            case Qt::Key_U:
                 if (ke->modifiers().testFlag(Qt::ControlModifier)) {
                     QKeyEvent syn(QEvent::KeyPress,
                                   Qt::Key_PageUp,
@@ -1223,6 +1225,12 @@ bool Window::eventFilter(QObject *watched, QEvent *event)
                                   ke->text(),
                                   ke->isAutoRepeat());
                     return QApplication::sendEvent(input_line, &syn);
+                }
+                break;
+
+            case Qt::Key_W:
+                if (ke->modifiers().testFlag(Qt::ControlModifier)){
+                    input_line->deleteWordBackwards();
                 }
                 break;
 
