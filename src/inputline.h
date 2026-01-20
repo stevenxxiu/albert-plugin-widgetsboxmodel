@@ -24,6 +24,8 @@ public:
     QString text() const;
     void setText(QString);
 
+    void deleteWordBackwards();
+
     uint fontSize() const;
     void setFontSize(uint);
 
