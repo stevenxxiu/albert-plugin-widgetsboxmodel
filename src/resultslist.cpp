@@ -3,6 +3,7 @@
 #include "primitives.h"
 #include "resultitemmodel.h"
 #include "resultslist.h"
+#include <QAbstractTextDocumentLayout>
 #include <QApplication>
 #include <QPainter>
 #include <QPixmapCache>
@@ -98,6 +99,10 @@ void ResultsListDelegate::paint(QPainter *p,
                              texts_width,
                              subtext_font_metrics.height()};
 
+    QAbstractTextDocumentLayout::PaintContext ctx;
+    ctx.palette.setColor(QPalette::Text, o.widget->palette().color(
+      (o.state & QStyle::State_Selected) ? QPalette::HighlightedText : QPalette::WindowText));
+
     //
     // DATA
     //
@@ -105,14 +110,6 @@ void ResultsListDelegate::paint(QPainter *p,
     using enum ItemRoles;
 
     const auto selected = o.state.testFlag(QStyle::State_Selected);
-
-    const auto text = text_font_metrics.elidedText(i.data(TextRole).toString(),
-                                                   o.textElideMode,
-                                                   text_rect.width());
-
-    const auto subtext = subtext_font_metrics.elidedText(i.data(SubTextRole).toString(),
-                                                         o.textElideMode,
-                                                         subtext_rect.width());
 
     QPixmap pm;
     if (const auto cache_key = u"%1@%2x%3"_s
@@ -145,18 +142,23 @@ void ResultsListDelegate::paint(QPainter *p,
         icon_rect.y() + (icon_rect.height() - (int)pm.deviceIndependentSize().height()) / 2,
         pm);
 
+    QTextDocument doc;
+
     // Draw text
-    p->setFont(text_font);
-    p->setPen(QPen(selected ? selection_text_color : text_color, 0));
-    p->drawText(text_rect, Qt::AlignTop | Qt::AlignLeft | Qt::TextDontClip, text);
+    doc.setDefaultFont(text_font);
+    p->translate(text_rect.left(), text_rect.top());
+    doc.setHtml(i.data(TextRole).toString());
+    doc.documentLayout()->draw(p, ctx);
     // // Clips. Adjust by descent sice origin seems to be the baseline
     // p->drawText(text_rect, text);
     // p->drawText(text_rect.bottomLeft() - QPoint(0, text_font_metrics.descent() - 1), text);
 
     // Draw subtext
-    p->setFont(subtext_font);
-    p->setPen(QPen(selected ? selection_subtext_color : subtext_color, 0));
-    p->drawText(subtext_rect, Qt::AlignTop | Qt::AlignLeft | Qt::TextDontClip, subtext);
+    doc.setDefaultFont(subtext_font);
+    p->translate(0, text_rect.height() - 4);
+    doc.setHtml(i.data(SubTextRole).toString());
+    doc.documentLayout()->draw(p, ctx);
+
     // // Clips. Adjust by descent sice origin seems to be the baseline
     // p->drawText(subtext_rect, subtext);
     // p->drawText(subtext_rect.bottomLeft() - QPoint(0, subtext_font_metrics.descent() - 1), subtext);
