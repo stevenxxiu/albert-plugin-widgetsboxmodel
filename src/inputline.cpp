@@ -132,6 +132,34 @@ void InputLine::setText(QString t)
     connect(this, &InputLine::textChanged, this, &InputLine::textEdited);
 }
 
+void InputLine::deleteWordBackwards()
+{
+    disconnect(this, &InputLine::textChanged, this, &InputLine::textEdited);
+
+    QTextCursor c = textCursor();
+    int endPos = c.position();
+    if (endPos == 0)
+        return;
+
+    QString text = toPlainText();
+    int pos = endPos - 1;
+    while (pos >= 0 && text[pos].isSpace()) {
+        pos -= 1;
+    }
+    while (pos >= 0 && !text[pos].isSpace()) {
+        pos -= 1;
+    }
+    pos += 1;
+    c.beginEditBlock();
+    c.setPosition(pos);
+    c.setPosition(endPos, QTextCursor::KeepAnchor);
+    c.removeSelectedText();
+    c.endEditBlock();
+    setTextCursor(c);
+
+    connect(this, &InputLine::textChanged, this, &InputLine::textEdited);
+}
+
 void InputLine::next()
 {
     if (auto t = history_.next(history_search ? user_text_ : QString());

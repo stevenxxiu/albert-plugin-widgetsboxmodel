@@ -24,6 +24,8 @@ public:
     QString text() const;
     void setText(QString);
 
+    void deleteWordBackwards();
+
     const QColor &triggerColor() const;
     void setTriggerColor(const QColor &);
 
