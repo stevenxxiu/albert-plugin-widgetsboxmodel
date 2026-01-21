@@ -44,9 +44,9 @@ namespace  {
 
 const double settings_button_rps_idle = 0.2;
 const double settings_button_rps_busy = 0.5;
-const unsigned settings_button_rps_animation_duration = 3000;
-const unsigned settings_button_fade_animation_duration = 500;
-const unsigned settings_button_highlight_animation_duration = 1000;
+const unsigned settings_button_rps_animation_duration = 0;
+const unsigned settings_button_fade_animation_duration = 0;
+const unsigned settings_button_highlight_animation_duration = 0;
 
 const struct {
     const bool      always_on_top                               = true;
@@ -553,7 +553,7 @@ void Window::initializeStatemachine()
         color_animation_ = make_unique<QPropertyAnimation>(settings_button, "color");
         color_animation_->setEndValue(c);
         color_animation_->setEasingCurve(QEasingCurve::OutQuad);
-        color_animation_->setDuration(500);
+        color_animation_->setDuration(0);
         connect(color_animation_.get(), &QPropertyAnimation::finished,
                 settings_button, &SettingsButton::hide);
         color_animation_->start();
