@@ -3,6 +3,7 @@
 #include "configwidget.h"
 #include "ui_configwidget.h"
 #include "window.h"
+#include <QDialog>
 #include <QGroupBox>
 #include <albert/widgetsutil.h>
 using namespace albert;
@@ -171,7 +172,7 @@ ConfigWidget::ConfigWidget(Window &_window):
 
     connect(ui.pushButton_winprop, &QPushButton::pressed, this, [this]
     {
-        auto w = new QWidget;
+        auto w = new QDialog(this);
         auto wl = new QHBoxLayout(w);
         auto vll = new QVBoxLayout(w);
         auto vlr = new QVBoxLayout(w);
