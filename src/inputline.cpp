@@ -70,44 +70,23 @@ public:
 
 
 InputLine::InputLine(QWidget *parent):
-    QPlainTextEdit(parent),
+    ResizingQPlainTextEdit(parent),
     trigger_length_(0),
     highlighter_(new TriggerHighlighter(document(), this))
 {
     document()->setDocumentMargin(1); // 0 would be optimal but clips bearing
 
     setFrameStyle(QFrame::NoFrame);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setWordWrapMode(QTextOption::NoWrap);
     viewport()->setAutoFillBackground(false);
 
-    connect(this, &QPlainTextEdit::textChanged,
+    connect(this, &InputLine::textChanged,
             this, &InputLine::textEdited);
 
     connect(this, &InputLine::textEdited, this, [this]{
         history_.resetIterator();
         user_text_ = text();
     });
-
-    // auto fixHeight = [this]{
-    //     INFO << "INPUTLINE fm lineSpacing" << fontMetrics().lineSpacing();
-    //     INFO << "INPUTLINE doc height" << document()->size().height();
-    //     INFO << "INPUTLINE doc margin" << document()->documentMargin();
-    //     int height = document()->size().height() ;//+ document()->documentMargin();
-    //     INFO << "Final height" << height;
-    //     setFixedHeight(height);
-    // };
-
-    connect(document()->documentLayout(), &QAbstractTextDocumentLayout::documentSizeChanged,
-            this,[this](const QSizeF &newSize)
-            {
-                // Looks like there is some more space needed. The scrollarea reserves space in full
-                // multiples of lines. Without the + 1 an additional line is reserved. Maybe some
-                // rounding issues or such.
-                setFixedHeight((int)newSize.height() * fontMetrics().lineSpacing()
-                               + 2 * (int)document()->documentMargin() + 1); // see comment above
-            });
 }
 
 const QString &InputLine::synopsis() const { return synopsis_; }
@@ -140,7 +119,7 @@ void InputLine::setText(QString t)
 {
     // setPlainText(t);  // Dont. Clears undo stack.
 
-    disconnect(this, &QPlainTextEdit::textChanged, this, &InputLine::textEdited);
+    disconnect(this, &InputLine::textChanged, this, &InputLine::textEdited);
 
     QTextCursor c{document()};
     c.beginEditBlock();
@@ -150,7 +129,7 @@ void InputLine::setText(QString t)
     c.endEditBlock();
     setTextCursor(c);
 
-    connect(this, &QPlainTextEdit::textChanged, this, &InputLine::textEdited);
+    connect(this, &InputLine::textChanged, this, &InputLine::textEdited);
 }
 
 void InputLine::next()
@@ -164,6 +143,13 @@ void InputLine::previous()
 {
     auto t = history_.prev(history_search ? user_text_ : QString());
     setText(t.isNull() ? user_text_ : t);  // restore text at end
+}
+
+bool InputLine::event(QEvent *event)
+{
+    if (event->type() == QEvent::FontChange)
+        highlighter_->rehighlight(); // required because it sets hint advance, updates
+    return ResizingQPlainTextEdit::event(event);
 }
 
 void InputLine::paintEvent(QPaintEvent *event)
@@ -205,7 +191,6 @@ void InputLine::paintEvent(QPaintEvent *event)
         }
     }
 
-
     // qreal bearing_diff = 0;
     // if (!text().isEmpty())
     // {
@@ -234,7 +219,7 @@ void InputLine::hideEvent(QHideEvent *event)
     else
         selectAll();
 
-    QPlainTextEdit::hideEvent(event);
+    ResizingQPlainTextEdit::hideEvent(event);
 }
 
 void InputLine::keyPressEvent(QKeyEvent *event)
@@ -252,7 +237,7 @@ void InputLine::keyPressEvent(QKeyEvent *event)
         }
 #endif
     default:
-        QPlainTextEdit::keyPressEvent(event);
+        ResizingQPlainTextEdit::keyPressEvent(event);
     }
 }
 
@@ -263,31 +248,7 @@ void InputLine::inputMethodEvent(QInputMethodEvent *event)
         return event->accept();
     }
     else
-        QPlainTextEdit::inputMethodEvent(event);
-}
-
-int InputLine::fontSize() const { return font().pointSize(); }
-
-void InputLine::setFontSize(int v)
-{
-    if (font().pointSize() != v)
-    {
-        auto f = font();
-        f.setPointSize(v);
-        setFont(f);
-        // setFixedHeight(fontMetrics().lineSpacing() + 2 * (int)document()->documentMargin());
-
-        // Fix for nicely aligned text.
-        // The text should be idented by the distance of the cap line to the top.
-        auto fm = fontMetrics();
-        auto font_margin_fix = (fm.lineSpacing() - fm.capHeight()
-                                - fm.tightBoundingRect(u"|"_s).width())/2;
-
-        // 1px document margins
-        setViewportMargins(font_margin_fix, 0, font_margin_fix, 0);
-
-        highlighter_->rehighlight(); // required because it sets hint advance, updates
-    }
+        ResizingQPlainTextEdit::inputMethodEvent(event);
 }
 
 const QColor &InputLine::triggerColor() const { return trigger_color_; }

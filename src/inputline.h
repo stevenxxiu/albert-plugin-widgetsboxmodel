@@ -1,10 +1,10 @@
 // Copyright (c) 2022-2025 Manuel Schneider
 
 #pragma once
-#include <QPlainTextEdit>
+#include "resizingqplaintextedit.h"
 #include <albert/inputhistory.h>
 
-class InputLine : public QPlainTextEdit
+class InputLine : public ResizingQPlainTextEdit
 {
     Q_OBJECT
 
@@ -24,9 +24,6 @@ public:
     QString text() const;
     void setText(QString);
 
-    int fontSize() const;
-    void setFontSize(int);
-
     const QColor &triggerColor() const;
     void setTriggerColor(const QColor &);
 
@@ -43,12 +40,13 @@ public:
     bool history_search;
     bool disable_input_method_;
 
-private:
 
-    void paintEvent(QPaintEvent *event) override;
+private:
+    bool event(QEvent *event) override;
     void hideEvent(QHideEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
     void inputMethodEvent(QInputMethodEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
     albert::detail::InputHistory history_;
     QString completion_;
