@@ -75,39 +75,39 @@ ConfigWidget::ConfigWidget(Window &_window):
     Ui::ConfigWidget ui;
     ui.setupUi(this);
 
-    ui.comboBox_theme_light->addItem(tr("System"), QString());
-    ui.comboBox_theme_light->insertSeparator(1);
-    for (const auto&[name, _] : window.themes)
+    ui.comboBox_style_light->addItem(tr("System"), QString());
+    ui.comboBox_style_light->insertSeparator(1);
+    for (const auto&[name, _] : window.styles)
     {
-        ui.comboBox_theme_light->addItem(name, name);
-        if (name == window.themeLight())
-            ui.comboBox_theme_light->setCurrentIndex(ui.comboBox_theme_light->count()-1);
+        ui.comboBox_style_light->addItem(name, name);
+        if (name == window.styleLight())
+            ui.comboBox_style_light->setCurrentIndex(ui.comboBox_style_light->count()-1);
     }
-    connect(ui.comboBox_theme_light,
+    connect(ui.comboBox_style_light,
             static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [this, comboBox_themes=ui.comboBox_theme_light](int i)
-            { window.setThemeLight(comboBox_themes->itemData(i).toString()); });
+            this, [this, cb=ui.comboBox_style_light](int i)
+            { window.setStyleLight(cb->itemData(i).toString()); });
 
-    connect(&window, &Window::themeLightChanged, this, [cb=ui.comboBox_theme_light](QString theme){
-        if (auto i = cb->findData(theme); i != -1)
+    connect(&window, &Window::styleLightChanged, this, [cb=ui.comboBox_style_light](QString name){
+        if (auto i = cb->findData(name); i != -1)
             cb->setCurrentIndex(i);
     });
 
 
-    ui.comboBox_theme_dark->addItem(tr("System"), QString());
-    ui.comboBox_theme_dark->insertSeparator(1);
-    for (const auto&[name, _] : window.themes)
+    ui.comboBox_style_dark->addItem(tr("System"), QString());
+    ui.comboBox_style_dark->insertSeparator(1);
+    for (const auto&[name, _] : window.styles)
     {
-        ui.comboBox_theme_dark->addItem(name, name);
-        if (name == window.themeDark())
-            ui.comboBox_theme_dark->setCurrentIndex(ui.comboBox_theme_dark->count()-1);
+        ui.comboBox_style_dark->addItem(name, name);
+        if (name == window.styleDark())
+            ui.comboBox_style_dark->setCurrentIndex(ui.comboBox_style_dark->count()-1);
     }
-    connect(ui.comboBox_theme_dark,
+    connect(ui.comboBox_style_dark,
             static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [this, comboBox_themes=ui.comboBox_theme_dark](int i)
-            { window.setThemeDark(comboBox_themes->itemData(i).toString()); });
-    connect(&window, &Window::themeDarkChanged, this, [cb=ui.comboBox_theme_dark](QString theme){
-        if (auto i = cb->findData(theme); i != -1)
+            this, [this, cb=ui.comboBox_style_dark](int i)
+            { window.setStyleDark(cb->itemData(i).toString()); });
+    connect(&window, &Window::styleDarkChanged, this, [cb=ui.comboBox_style_dark](QString name){
+        if (auto i = cb->findData(name); i != -1)
             cb->setCurrentIndex(i);
     });
 
@@ -169,112 +169,4 @@ ConfigWidget::ConfigWidget(Window &_window):
                &Window::debugMode,
                &Window::setDebugMode,
                &Window::debugModeChanged);
-
-    connect(ui.pushButton_winprop, &QPushButton::pressed, this, [this]
-    {
-        auto w = new QDialog(this);
-        auto wl = new QHBoxLayout(w);
-        auto vll = new QVBoxLayout(w);
-        auto vlr = new QVBoxLayout(w);
-        wl->addLayout(vll);
-        wl->addLayout(vlr);
-
-        auto b = new QGroupBox(tr("Window"));
-        auto bl = new QFormLayout(b);
-
-        addPixelMetricSpinBox(bl, tr("Shadow size"), &window,
-                              &Window::windowShadowSize, &Window::setWindowShadowSize);
-
-        addPixelMetricSpinBox(bl, tr("Shadow offset"), &window,
-                              &Window::windowShadowOffset, &Window::setWindowShadowOffset);
-
-
-        auto sb = addPixelMetricSpinBox(bl, tr("Width"), &window,
-                                        &Window::windowWidth, &Window::setWindowWidth);
-        sb->setSingleStep(10);
-        QSignalBlocker block(sb);  // setRange emits value change
-        sb->setMinimum(320);
-        sb->setMaximum(1280);
-        sb->setValue(window.windowWidth());
-
-        addPixelMetricSpinBox(bl, tr("Border radius"), &window,
-                              &Window::windowBorderRadius, &Window::setWindowBorderRadius);
-
-        addPixelMetricSpinBox(bl, tr("Border width"), &window,
-                              &Window::windowBorderWidth, &Window::setWindowBorderWidth);
-
-        addPixelMetricSpinBox(bl, tr("Padding"), &window,
-                              &Window::windowPadding, &Window::setWindowPadding);
-
-        addPixelMetricSpinBox(bl, tr("Spacing"), &window,
-                              &Window::windowSpacing, &Window::setWindowSpacing);
-
-        vll->addWidget(b);
-        b = new QGroupBox(tr("Input"));
-        bl = new QFormLayout(b);
-
-        addFontSpinBox(bl, tr("Font size"), &window,
-                       &Window::inputFontSize, &Window::setInputFontSize);
-
-        addPixelMetricSpinBox(bl, tr("Border radius"), &window,
-                              &Window::inputBorderRadius, &Window::setInputBorderRadius);
-
-        addPixelMetricSpinBox(bl, tr("Border width"), &window,
-                              &Window::inputBorderWidth, &Window::setInputBorderWidth);
-
-        addPixelMetricSpinBox(bl, tr("Padding"), &window,
-                              &Window::inputPadding, &Window::setInputPadding);
-
-        vll->addWidget(b);
-        b = new QGroupBox(tr("Results"));
-        bl = new QFormLayout(b);
-
-        addFontSpinBox(bl, tr("Font size"), &window,
-                       &Window::resultItemTextFontSize, &Window::setResultItemTextFontSize);
-
-        addFontSpinBox(bl, tr("Description font size"), &window,
-                       &Window::resultItemSubtextFontSize, &Window::setResultItemSubtextFontSize);
-
-        addPixelMetricSpinBox(bl, tr("Selection border radius"), &window,
-                              &Window::resultItemSelectionBorderRadius, &Window::setResultItemSelectionBorderRadius);
-
-        addPixelMetricSpinBox(bl, tr("Selection border width"), &window,
-                              &Window::resultItemSelectionBorderWidth, &Window::setResultItemSelectionBorderWidth);
-
-        addPixelMetricSpinBox(bl, tr("Padding"), &window,
-                              &Window::resultItemPadding, &Window::setResultItemPadding);
-
-        addPixelMetricSpinBox(bl, tr("Icon size"), &window,
-                              &Window::resultItemIconSize, &Window::setResultItemIconSize);
-
-        addPixelMetricSpinBox(bl, tr("Horizontal spacing"), &window,
-                              &Window::resultItemHorizontalSpace, &Window::setResultItemHorizontalSpace);
-
-        addPixelMetricSpinBox(bl, tr("Vertical spacing"), &window,
-                              &Window::resultItemVerticalSpace, &Window::setResultItemVerticalSpace);
-
-        vlr->addWidget(b);
-        b = new QGroupBox(tr("Actions"));
-        bl = new QFormLayout(b);
-
-        addFontSpinBox(bl, tr("Font size"), &window,
-                       &Window::actionItemFontSize, &Window::setActionItemFontSize);
-
-        addPixelMetricSpinBox(bl, tr("Selection border radius"), &window,
-                              &Window::actionItemSelectionBorderRadius, &Window::setActionItemSelectionBorderRadius);
-
-        addPixelMetricSpinBox(bl, tr("Selection border width"), &window,
-                              &Window::actionItemSelectionBorderWidth, &Window::setActionItemSelectionBorderWidth);
-
-        addPixelMetricSpinBox(bl, tr("Padding"), &window,
-                              &Window::actionItemPadding, &Window::setActionItemPadding);
-
-        vlr->addWidget(b);
-        w->setWindowTitle(tr("Window properties"));
-        w->setWindowModality(Qt::WindowModality::WindowModal);
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        w->show();
-    });
-
-
 }

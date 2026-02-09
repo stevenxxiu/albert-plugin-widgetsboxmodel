@@ -9,7 +9,7 @@
 #include "resultslist.h"
 #include "settingsbutton.h"
 #include "statetransitions.h"
-#include "theme.h"
+#include "style.h"
 #include "util.h"
 #include "window.h"
 #include <QApplication>
@@ -35,13 +35,13 @@
 #include <albert/queryexecution.h>
 #include <albert/queryhandler.h>
 #include <albert/queryresults.h>
+#include <albert/systemutil.h>
 using namespace Qt::StringLiterals;
 using namespace albert;
 using namespace std;
 
 namespace  {
 
-const auto &themes_dir_name = "themes";
 const double settings_button_rps_idle = 0.2;
 const double settings_button_rps_busy = 0.5;
 const unsigned settings_button_rps_animation_duration = 3000;
@@ -49,9 +49,6 @@ const unsigned settings_button_fade_animation_duration = 500;
 const unsigned settings_button_highlight_animation_duration = 1000;
 
 const struct {
-
-    using ColorRole = QPalette::ColorRole;
-
     const bool      always_on_top                               = true;
     const bool      centered                                    = true;
     const bool      clear_on_hide                               = true;
@@ -64,59 +61,7 @@ const struct {
     const bool      shadow_client                               = true;
     const bool      shadow_system                               = false;
     const bool      disable_input_method                        = true;
-    const char*     theme_dark                                  = "Default System Palette";
-    const char*     theme_light                                 = "Default System Palette";
     const uint      max_results                                 = 5;
-
-    const uint      general_spacing                             = 6;
-
-    const uint      window_shadow_size                          = 80;
-    const uint      window_shadow_offset                        = 8;
-    const QColor    window_shadow_color                         = QColor(0, 0, 0, 92);
-
-    const ColorRole input_background_brush                      = ColorRole::Base;
-    const ColorRole input_border_brush                          = ColorRole::Highlight;
-    const double    input_border_width                          = 0;
-    const int       input_padding                               = general_spacing + (int)input_border_width - 1; // Plaintextedit has a margin of 1
-    const double    input_border_radius                         = general_spacing + input_padding;
-
-    const ColorRole window_background_brush                     = ColorRole::Window;
-    const ColorRole window_border_brush                         = ColorRole::Highlight;
-    const double    window_border_width                         = 1;
-    const int       window_padding                              = general_spacing + (int)window_border_width;
-    const double    window_border_radius                        = window_padding + input_border_radius;
-    const int       window_spacing                              = window_padding;
-    const int       window_width                                = 640;
-
-    const int       input_font_size                             = QApplication::font().pointSize() + 9;
-
-    const ColorRole settings_button_color                       = ColorRole::Button;
-    const ColorRole settings_button_highlight_color             = ColorRole::Highlight;
-
-    const ColorRole result_item_selection_background_brush      = ColorRole::Highlight;
-    const ColorRole result_item_selection_border_brush          = ColorRole::Highlight;
-    const double    result_item_selection_border_radius         = input_border_radius;
-    const double    result_item_selection_border_width          = 0;
-    const ColorRole result_item_selection_text_color            = ColorRole::HighlightedText;
-    const ColorRole result_item_selection_subtext_color         = ColorRole::PlaceholderText;
-    const int       result_item_padding                         = general_spacing;
-    const ColorRole result_item_text_color                      = ColorRole::WindowText;
-    const ColorRole result_item_subtext_color                   = ColorRole::PlaceholderText;
-    const int       result_item_icon_size                       = 39;
-    const int       result_item_text_font_size                  = QApplication::font().pointSize() + 4;
-    const int       result_item_subtext_font_size               = QApplication::font().pointSize() - 1;
-    const int       result_item_horizontal_spacing              = general_spacing;
-    const int       result_item_vertical_spacing                = 2;
-
-    const ColorRole action_item_selection_background_brush      = ColorRole::Highlight;
-    const ColorRole action_item_selection_border_brush          = ColorRole::Highlight;
-    const double    action_item_selection_border_radius         = input_border_radius;
-    const double    action_item_selection_border_width          = 0;
-    const ColorRole action_item_selection_text_color            = ColorRole::HighlightedText;
-    const int       action_item_padding                         = general_spacing;
-    const ColorRole action_item_text_color                      = ColorRole::WindowText;
-    const int       action_item_font_size                       = QApplication::font().pointSize();
-
 } defaults;
 
 
@@ -136,55 +81,9 @@ const struct {
     const char *quit_on_close                          = "quitOnClose";
     const char *shadow_client                          = "clientShadow";
     const char *shadow_system                          = "systemShadow";
-    const char *theme_dark                             = "darkTheme";
-    const char *theme_light                            = "lightTheme";
+    const char *style_dark                             = "darkStyle";
+    const char *style_light                            = "lightStyle";
     const char *disable_input_method                   = "disable_input_method";
-
-    const char* window_shadow_size                     = "window_shadow_size";
-    const char* window_shadow_offset                   = "window_shadow_offset";
-    const char* window_shadow_brush                    = "window_shadow_brush";
-
-    const char* window_background_brush                = "window_background_brush";
-    const char* window_border_brush                    = "window_border_brush";
-    const char* window_border_radius                   = "window_border_radius";
-    const char* window_border_width                    = "window_border_width";
-    const char* window_padding                         = "window_padding";
-    const char* window_spacing                         = "window_spacing";
-    const char* window_width                           = "window_width";
-
-    const char* input_background_brush                 = "input_background_brush";
-    const char* input_border_brush                     = "input_border_brush";
-    const char* input_border_radius                    = "input_border_radius";
-    const char* input_border_width                     = "input_border_width";
-    const char* input_padding                          = "input_padding";
-    const char *input_font_size                        = "input_font_size";
-
-    const char *settings_button_color                  = "settings_button_color";
-    const char *settings_button_highlight_color        = "settings_button_highlight_color";
-
-    const char *result_item_selection_background_brush = "result_item_selection_background_brush";
-    const char *result_item_selection_border_brush     = "result_item_selection_border_brush";
-    const char *result_item_selection_border_radius    = "result_item_selection_border_radius";
-    const char *result_item_selection_border_width     = "result_item_selection_border_width";
-    const char *result_item_selection_text_color       = "result_item_selection_text_color";
-    const char *result_item_selection_subtext_color    = "result_item_selection_subtext_color";
-    const char *result_item_padding                    = "result_item_padding";
-    const char *result_item_text_color                 = "result_item_text_color";
-    const char *result_item_subtext_color              = "result_item_subtext_color";
-    const char *result_item_icon_size                  = "result_item_icon_size";
-    const char *result_item_text_font_size             = "result_item_text_font_size";
-    const char *result_item_subtext_font_size          = "result_item_subtext_font_size";
-    const char *result_item_horizontal_spacing         = "result_item_horizontal_spacing";
-    const char *result_item_vertical_spacing           = "result_item_vertical_spacing";
-
-    const char *action_item_selection_background_brush = "action_item_selection_background_brush";
-    const char *action_item_selection_border_brush     = "action_item_selection_border_brush";
-    const char *action_item_selection_border_radius    = "action_item_selection_border_radius";
-    const char *action_item_selection_border_width     = "action_item_selection_border_width";
-    const char *action_item_selection_text_color       = "action_item_selection_text_color";
-    const char *action_item_padding                    = "action_item_padding";
-    const char *action_item_text_color                 = "action_item_text_color";
-    const char *action_item_font_size                  = "action_item_font_size";
 
 } keys;
 
@@ -206,11 +105,9 @@ constexpr Qt::Key mods_keys[] = {
 
 Window::Window(PluginInstance &p) :
     plugin(p),
-    themes(findThemes()),
+    styles(StyleReader(styleDirectories()).styles),
     input_frame(new Frame(this)),
     input_line(new InputLine(input_frame)),
-    spacer_left(new QSpacerItem(0, 0)),
-    spacer_right(new QSpacerItem(0, 0)),
     settings_button(new SettingsButton(input_frame)),
     results_list(new ResultsList(this)),
     actions_list(new ActionsList(this)),
@@ -219,7 +116,6 @@ Window::Window(PluginInstance &p) :
     edit_mode_(false)
 {
     initializeUi();
-    initializeProperties();
     initializeWindowActions();
     initializeStatemachine();
 
@@ -233,6 +129,9 @@ Window::Window(PluginInstance &p) :
 
     connect(settings_button, &SettingsButton::clicked,
             this, &Window::onSettingsButtonClick);
+
+    connect(&style_watcher, &QFileSystemWatcher::fileChanged,
+            this, &Window::onStyleFileChanged);
 
     QPixmapCache::setCacheLimit(1024 * 50);  // 50 MB
 }
@@ -254,9 +153,7 @@ void Window::initializeUi()
     // Structure
 
     auto *input_frame_layout = new QHBoxLayout(input_frame);
-    input_frame_layout->addItem(spacer_left);
     input_frame_layout->addWidget(input_line, 0, Qt::AlignTop);  // Needed to remove ui flicker
-    input_frame_layout->addItem(spacer_right);
     input_frame_layout->addWidget(settings_button, 0, Qt::AlignTop);
 
     auto *layout = new QVBoxLayout(this);
@@ -307,146 +204,49 @@ void Window::initializeUi()
     results_list->hide();
     actions_list->hide();
     actions_list->setMaxItems(100);
-}
 
-void Window::initializeProperties()
-{
+
+    // Preferences
+
     auto s = plugin.settings();
-    setAlwaysOnTop(
-        s->value(keys.always_on_top,
-                 defaults.always_on_top).toBool());
-    setClearOnHide(
-        s->value(keys.clear_on_hide,
-                 defaults.clear_on_hide).toBool());
-    setDisplayScrollbar(
-        s->value(keys.display_scrollbar,
-                 defaults.display_scrollbar).toBool());
-    setFollowCursor(
-        s->value(keys.follow_cursor,
-                 defaults.follow_cursor).toBool());
-    setHideOnFocusLoss(
-        s->value(keys.hide_on_focus_loss,
-                 defaults.hide_on_focus_loss).toBool());
-    setHistorySearchEnabled(
-        s->value(keys.history_search,
-                 defaults.history_search).toBool());
-    setMaxResults(
-        s->value(keys.max_results,
-                 defaults.max_results).toUInt());
-    setShowCentered(
-        s->value(keys.centered,
-                 defaults.centered).toBool());
-    setDisableInputMethod(
-        s->value(keys.disable_input_method,
-                 defaults.disable_input_method).toBool());
-    setDebugMode(
-        s->value(keys.debug,
-                 defaults.debug).toBool());
 
+    setAlwaysOnTop(s->value(keys.always_on_top,
+                            defaults.always_on_top).toBool());
 
-    setWindowShadowSize(
-        s->value(keys.window_shadow_size,
-                 defaults.window_shadow_size).toUInt());
+    setClearOnHide(s->value(keys.clear_on_hide,
+                            defaults.clear_on_hide).toBool());
 
-    setWindowShadowOffset(
-        s->value(keys.window_shadow_offset,
-                 defaults.window_shadow_offset).toUInt());
+    setDisplayScrollbar(s->value(keys.display_scrollbar,
+                                 defaults.display_scrollbar).toBool());
 
-    setWindowBorderRadius(
-        s->value(keys.window_border_radius,
-                 defaults.window_border_radius).toDouble());
+    setFollowCursor(s->value(keys.follow_cursor,
+                             defaults.follow_cursor).toBool());
 
-    setWindowBorderWidth(
-        s->value(keys.window_border_width,
-                 defaults.window_border_width).toDouble());
+    setHideOnFocusLoss(s->value(keys.hide_on_focus_loss,
+                                defaults.hide_on_focus_loss).toBool());
 
-    setWindowPadding(
-        s->value(keys.window_padding,
-                 defaults.window_padding).toUInt());
+    setHistorySearchEnabled(s->value(keys.history_search,
+                                     defaults.history_search).toBool());
 
-    setWindowSpacing(
-        s->value(keys.window_spacing,
-                 defaults.window_spacing).toUInt());
+    setMaxResults(s->value(keys.max_results,
+                           defaults.max_results).toUInt());
 
-    setWindowWidth(
-        s->value(keys.window_width,
-                 defaults.window_width).toInt());
+    setShowCentered(s->value(keys.centered,
+                             defaults.centered).toBool());
 
+    setDisableInputMethod(s->value(keys.disable_input_method,
+                                   defaults.disable_input_method).toBool());
 
-    setInputPadding(
-        s->value(keys.input_padding,
-                 defaults.input_padding).toUInt());
+    setDebugMode(s->value(keys.debug,
+                          defaults.debug).toBool());
 
-    setInputBorderRadius(
-        s->value(keys.input_border_radius,
-                 defaults.input_border_radius).toDouble());
+    if (auto t = s->value(keys.style_light).toString(); styles.contains(t))
+        style_light_ = t;
+    if (auto t = s->value(keys.style_dark).toString(); styles.contains(t))
+        style_dark_ = t;
 
-    setInputBorderWidth(
-        s->value(keys.input_border_width,
-                 defaults.input_border_width).toDouble());
-
-    setInputFontSize(
-        s->value(keys.input_font_size,
-                 defaults.input_font_size).toInt());
-
-
-    setResultItemSelectionBorderRadius(
-        s->value(keys.result_item_selection_border_radius,
-                 defaults.result_item_selection_border_radius).toDouble());
-
-    setResultItemSelectionBorderWidth(
-        s->value(keys.result_item_selection_border_width,
-                 defaults.result_item_selection_border_width).toDouble());
-
-    setResultItemPadding(
-        s->value(keys.result_item_padding,
-                 defaults.result_item_padding).toUInt());
-
-    setResultItemIconSize(
-        s->value(keys.result_item_icon_size,
-                 defaults.result_item_icon_size).toUInt());
-
-    setResultItemTextFontSize(
-        s->value(keys.result_item_text_font_size,
-                 defaults.result_item_text_font_size).toUInt());
-
-    setResultItemSubtextFontSize(
-        s->value(keys.result_item_subtext_font_size,
-                 defaults.result_item_subtext_font_size).toUInt());
-
-    setResultItemHorizontalSpace(
-        s->value(keys.result_item_horizontal_spacing,
-                 defaults.result_item_horizontal_spacing).toUInt());
-
-    setResultItemVerticalSpace(
-        s->value(keys.result_item_vertical_spacing,
-                 defaults.result_item_vertical_spacing).toUInt());
-
-
-    setActionItemSelectionBorderRadius(
-        s->value(keys.action_item_selection_border_radius,
-                 defaults.action_item_selection_border_radius).toDouble());
-
-    setActionItemSelectionBorderWidth(
-        s->value(keys.action_item_selection_border_width,
-                 defaults.action_item_selection_border_width).toDouble());
-
-    setActionItemFontSize(
-        s->value(keys.action_item_font_size,
-                 defaults.action_item_font_size).toUInt());
-
-    setActionItemPadding(
-        s->value(keys.action_item_padding,
-                 defaults.action_item_padding).toUInt());
-
-
-    if (auto t = s->value(keys.theme_light).toString(); themes.contains(t))
-        theme_light_ = t;
-    if (auto t = s->value(keys.theme_dark).toString(); themes.contains(t))
-        theme_dark_ = t;
-
-    // applyTheme requires a valid window for the message box. Set theme later.
-    QTimer::singleShot(0, this, [this]{ applyTheme(dark_mode ? theme_dark_ : theme_light_); });
+    // applyStyle requires a valid window for the message box. Set style later.
+    QTimer::singleShot(0, this, [this]{ applyStyle(dark_mode ? style_dark_ : style_light_); });
 
     s = plugin.state();
     if (!showCentered() && s->contains(keys.window_position)
@@ -944,6 +744,17 @@ void Window::onFallbackActionActivation(const QModelIndex &index)
             hide();
 }
 
+void Window::onStyleFileChanged()
+{
+    try {
+        INFO << "Style file changed, reloading style";
+        StyleReader reader(styleDirectories());
+        applyStyle(reader.read((dark_mode) ? style_dark_ : style_light_));
+    } catch (const runtime_error &e) {
+        WARN << e.what();
+    }
+}
+
 QString Window::input() const { return input_line->text(); }
 
 void Window::setInput(const QString &text) { input_line->setText(text); }
@@ -980,70 +791,128 @@ void Window::setQuery(detail::Query *q)
     }
 }
 
-map<QString, QString> Window::findThemes() const
+vector<filesystem::path> Window::styleDirectories() const
 {
-    map<QString, QString> t;
-    for (const auto &path : plugin.dataLocations())
-        for (const auto theme_files = QDir(path / themes_dir_name)
-                                          .entryInfoList({u"*.ini"_s},
-                                                         QDir::Files | QDir::NoSymLinks);
-             const auto &ini_file_info : theme_files)
-            t.emplace(ini_file_info.baseName(), ini_file_info.canonicalFilePath());
-    return t;
+    auto v = plugin.dataLocations()
+             | views::transform([](const auto &p) { return p / "styles"; })
+             | views::filter([](const auto &p) { return exists(p); });
+
+    return {begin(v), end(v)};  // TODO ranges::to
 }
 
-void Window::applyTheme(const QString& name)
+void Window::applyStyle(const QString& name)
 {
     if (name.isNull())
-        applyTheme(Theme{});
+        applyStyle(Style{});
     else
     {
-        auto path = themes.at(name);  // names assumed to exist
-
         try {
-            applyTheme(Theme::read(path));
+            StyleReader reader(styleDirectories());
+            applyStyle(reader.read(name));
+            if (!style_watcher.files().isEmpty())
+                style_watcher.removePaths(style_watcher.files());
+            style_watcher.addPath(toQString(reader.styles.at(name)));
         } catch (const runtime_error &e) {
-            applyTheme(Theme());
+            applyStyle(Style());
             WARN << e.what();
-            albert::warning(u"%1:%2\n\n%3"_s.arg(tr("Failed loading theme"),
+            albert::warning(u"%1:%2\n\n%3"_s.arg(tr("Failed loading style"),
                                                  name,
                                                  QString::fromUtf8(e.what())));
         }
     }
 }
 
-void Window::applyTheme(const Theme &theme)
+void Window::applyStyle(const Style &style)
 {
     QPixmapCache::clear();
 
-    setPalette(theme.palette);
+    setPalette(style.palette);
 
-    setShadowBrush(theme.window_shadow_brush);
-    setFillBrush(theme.window_background_brush);
-    setBorderBrush(theme.window_border_brush);
+    // this (Frame)
+    this->setBackgroundBrush(style.window_background_brush);
+    this->setBorderBrush(style.window_border_brush);
+    this->setBorderWidth(style.window_border_width);
+    this->setBorderRadius(style.window_border_radius);
+    input_frame->setFixedWidth(style.window_width); // set on frame because it defines frame size
 
-    input_frame->setFillBrush(theme.input_background_brush);
-    input_frame->setBorderBrush(theme.input_border_brush);
+    // this (WindowFrame)
 
-    input_line->setTriggerColor(theme.input_trigger_color);
-    input_line->setHintColor(theme.input_hint_color);
+    this->setShadowSize(style.window_shadow_size);
+    this->setShadowOffset(style.window_shadow_offset);
+    this->setShadowBrush(style.window_shadow_brush);
 
-    settings_button_color_ = theme.settings_button_color;
-    settings_button->color = theme.settings_button_color;
+    // this (layout)
+    layout()->setContentsMargins(style.window_padding, style.window_padding,
+                                 style.window_padding, style.window_padding);
+    layout()->setSpacing(style.window_spacing);
+
+
+    // input_frame (Frame)
+    input_frame->setBackgroundBrush(style.input_background_brush);
+    input_frame->setBorderBrush(style.input_border_brush);
+    input_frame->setBorderWidth(style.input_border_width);
+    input_frame->setBorderRadius(style.input_border_radius);
+
+    // input_line (InputLine)
+    auto f = input_line->font();
+    f.setPointSize(style.input_font_size);
+    input_line->setFont(f);
+    input_line->setTriggerColor(style.input_trigger_color);
+    input_line->setInputActionColor(style.input_action_color);
+    input_line->setInputHintColor(style.input_hint_color);
+    // input_frame->setContentsMargins(style.input_padding, style.input_padding,
+    //                                 style.input_padding, style.input_padding);
+
+    // input_line->setContentsMargins(-5,-5,-5,-5);
+    // input_frame->setContentsMargins(-5,-5,-5,-5);
+
+    // settings_button (SettingsButton)
+    settings_button_color_ = style.settings_button_color; // ??
+    settings_button->color = style.settings_button_color;
     settings_button->color.setAlpha(0);
-    settings_button_color_highlight_ = theme.settings_button_highlight_color;
+    settings_button_color_highlight_ = style.settings_button_highlight_color;
 
-    results_list->setSelectionBackgroundBrush(theme.result_item_selection_background_brush);
-    results_list->setSelectionBorderBrush(theme.result_item_selection_border_brush);
-    results_list->setSelectionSubextColor(theme.result_item_selection_subtext_color);
-    results_list->setSelectionTextColor(theme.result_item_selection_text_color);
-    results_list->setSubtextColor(theme.result_item_subtext_color);
-    results_list->setTextColor(theme.result_item_text_color);
+    const auto fm = input_line->fontMetrics();
+    auto input_line_height = fm.lineSpacing() + 2;  // 1px document margins
 
-    actions_list->setSelectionBackgroundBrush(theme.action_item_selection_background_brush);
-    actions_list->setSelectionBorderBrush(theme.action_item_selection_border_brush);
-    actions_list->setSelectionTextColor(theme.action_item_selection_text_color);
-    actions_list->setTextColor(theme.action_item_text_color);
+    // Let settingsbutton have same size as a capital 'M'
+    // TODO: This is an ugly prototyped fix and should rather be solved by a proper input line class
+    auto font_margin_fix = (fm.lineSpacing() - fm.capHeight()
+                            - fm.tightBoundingRect(u"|"_s).width())/2+1;
+    font_margin_fix = 0;
+
+    settings_button->setFixedSize(4, 4);
+    settings_button->setContentsMargins(font_margin_fix, font_margin_fix,
+                                        font_margin_fix, font_margin_fix);
+
+    results_list->setIconSize(style.result_item_icon_size);
+    results_list->setTextFontSize(style.result_item_text_font_size);
+    results_list->setSubtextFontSize(style.result_item_subtext_font_size);
+    results_list->setHorizontalSpacing(style.result_item_horizontal_space);
+    results_list->setVerticalSpacing(style.result_item_vertical_space);
+    results_list->setPadding(style.result_item_padding);
+    results_list->setTextColor(style.result_item_text_color);
+    results_list->setSubtextColor(style.result_item_subtext_color);
+    results_list->setSelectionTextColor(style.result_item_selection_text_color);
+    results_list->setSelectionSubtextColor(style.result_item_selection_subtext_color);
+    results_list->setSelectionBackgroundBrush(style.result_item_selection_background_brush);
+    results_list->setSelectionBorderBrush(style.result_item_selection_border_brush);
+    results_list->setSelectionBorderRadius(style.result_item_selection_border_radius);
+    results_list->setSelectionBorderWidth(style.result_item_selection_border_width);
+
+    actions_list->setTextFontSize(style.action_item_font_size);
+    actions_list->setPadding(style.action_item_padding);
+    actions_list->setTextColor(style.action_item_text_color);
+    actions_list->setSelectionTextColor(style.action_item_selection_text_color);
+    actions_list->setSelectionBackgroundBrush(style.action_item_selection_background_brush);
+    actions_list->setSelectionBorderBrush(style.action_item_selection_border_brush);
+    actions_list->setSelectionBorderRadius(style.action_item_selection_border_radius);
+    actions_list->setSelectionBorderWidth(style.action_item_selection_border_width);
+
+
+
+    updateGeometry();
+    update();
 }
 
 bool Window::darkMode() const { return dark_mode; }
@@ -1110,7 +979,7 @@ bool Window::event(QEvent *event)
         QApplication::setPalette(QApplication::style()->standardPalette());
 #endif
         dark_mode = haveDarkSystemPalette();
-        applyTheme((dark_mode) ? theme_dark_ : theme_light_);
+        applyStyle((dark_mode) ? style_dark_ : style_light_);
     }
 
     else if (event->type() == QEvent::Close)
@@ -1362,44 +1231,44 @@ bool Window::eventFilter(QObject *watched, QEvent *event)
 //  PROPERTIES
 //
 
-const QString &Window::themeLight() const { return theme_light_; }
-void Window::setThemeLight(const QString &val)
+const QString &Window::styleLight() const { return style_light_; }
+void Window::setStyleLight(const QString &name)
 {
-    if (themeLight() == val)
+    if (styleLight() == name)
         return;
 
-    if (!themes.contains(val) && !val.isNull())
+    if (!styles.contains(name) && !name.isNull())
     {
-        WARN << "Theme does not exist:" << val;
+        WARN << "Style does not exist:" << name;
         return;
     }
 
     if (!dark_mode)
-        applyTheme(val);
+        applyStyle(name);
 
-    theme_light_ = val;
-    plugin.settings()->setValue(keys.theme_light, val);
-    emit themeLightChanged(val);
+    style_light_ = name;
+    plugin.settings()->setValue(keys.style_light, name);
+    emit styleLightChanged(name);
 }
 
-const QString &Window::themeDark() const { return theme_dark_; }
-void Window::setThemeDark(const QString &val)
+const QString &Window::styleDark() const { return style_dark_; }
+void Window::setStyleDark(const QString &name)
 {
-    if (themeDark() == val)
+    if (styleDark() == name)
         return;
 
-    if (!themes.contains(val) && !val.isNull())
+    if (!styles.contains(name) && !name.isNull())
     {
-        WARN << "Theme does not exist:" << val;
+        WARN << "Style does not exist:" << name;
         return;
     }
 
     if (dark_mode)
-        applyTheme(val);
+        applyStyle(name);
 
-    theme_dark_ = val;
-    plugin.settings()->setValue(keys.theme_dark, val);
-    emit themeDarkChanged(val);
+    style_dark_ = name;
+    plugin.settings()->setValue(keys.style_dark, name);
+    emit styleDarkChanged(name);
 }
 
 bool Window::alwaysOnTop() const { return windowFlags() & Qt::WindowStaysOnTopHint; }
@@ -1532,293 +1401,3 @@ void Window::setDisableInputMethod(bool val)
         plugin.settings()->setValue(keys.disable_input_method, val);
     }
 }
-
-
-uint Window::windowShadowSize() const { return shadowSize(); }
-void Window::setWindowShadowSize(uint val)
-{
-    if (val != windowShadowSize())
-    {
-        setShadowSize(val);
-        plugin.settings()->setValue(keys.window_shadow_size, val);
-    }
-}
-
-uint Window::windowShadowOffset() const { return shadowOffset(); }
-void Window::setWindowShadowOffset(uint val)
-{
-    if (val != windowShadowOffset())
-    {
-        setShadowOffset(val);
-        plugin.settings()->setValue(keys.window_shadow_offset, val);
-    }
-}
-
-double Window::windowBorderRadius() const { return radius(); }
-void Window::setWindowBorderRadius(double val)
-{
-    if (val != windowBorderRadius())
-    {
-        setRadius(val);
-        plugin.settings()->setValue(keys.window_border_radius, val);
-    }
-}
-
-double Window::windowBorderWidth() const { return borderWidth(); }
-void Window::setWindowBorderWidth(double val)
-{
-    if (val != windowBorderWidth())
-    {
-        setBorderWidth(val);
-        plugin.settings()->setValue(keys.window_border_width, val);
-    }
-}
-
-uint Window::windowPadding() const { return layout()->contentsMargins().left(); }
-void Window::setWindowPadding(uint val)
-{
-    if (val != windowPadding())
-    {
-        layout()->setContentsMargins(val, val, val, val);
-        plugin.settings()->setValue(keys.window_padding, val);
-    }
-}
-
-uint Window::windowSpacing() const { return layout()->spacing(); }
-void Window::setWindowSpacing(uint val)
-{
-    if (val != windowSpacing())
-    {
-        layout()->setSpacing(val);
-        plugin.settings()->setValue(keys.window_spacing, val);
-    }
-}
-
-uint Window::windowWidth() const { return input_frame->width(); }
-void Window::setWindowWidth(uint val)
-{
-    if (val != windowWidth())
-    {
-        input_frame->setFixedWidth(val);
-        plugin.settings()->setValue(keys.window_width, val);
-    }
-}
-
-
-uint Window::inputPadding() const { return input_frame->contentsMargins().left(); }
-void Window::setInputPadding(uint val)
-{
-    if (val != inputPadding())
-    {
-        input_frame->setContentsMargins(val, val, val, val);
-        plugin.settings()->setValue(keys.input_padding, val);
-    }
-}
-
-double Window::inputBorderRadius() const { return input_frame->radius(); }
-void Window::setInputBorderRadius(double val)
-{
-    if (val != inputBorderRadius())
-    {
-        input_frame->setRadius(val);
-        plugin.settings()->setValue(keys.input_border_radius, val);
-    }
-}
-
-double Window::inputBorderWidth() const { return input_frame->borderWidth(); }
-void Window::setInputBorderWidth(double val)
-{
-    if (val != inputBorderWidth())
-    {
-        input_frame->setBorderWidth(val);
-        plugin.settings()->setValue(keys.input_border_width, val);
-    }
-}
-
-uint Window::inputFontSize() const { return input_line->fontSize(); }
-void Window::setInputFontSize(uint val)
-{
-    if (val != inputFontSize())
-    {
-        input_line->setFontSize(val);
-        plugin.settings()->setValue(keys.input_font_size, val);
-
-        // Fix for nicely aligned text.
-        // The text should be idented by the distance of the cap line to the top.
-        auto fm = input_line->fontMetrics();
-        auto font_margin_fix = (fm.lineSpacing() - fm.capHeight() - fm.tightBoundingRect(u"|"_s).width())/2 ;
-        spacer_left->changeSize(font_margin_fix, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
-        spacer_right->changeSize(font_margin_fix, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-        auto input_line_height = fm.lineSpacing() + 2;  // 1px document margins
-        settings_button->setFixedSize(input_line_height, input_line_height);
-        settings_button->setContentsMargins(font_margin_fix, font_margin_fix,
-                                            font_margin_fix, font_margin_fix);
-    }
-}
-
-
-double Window::resultItemSelectionBorderRadius() const { return results_list->borderRadius(); }
-void Window::setResultItemSelectionBorderRadius(double val)
-{
-    if (val != resultItemSelectionBorderRadius())
-    {
-        results_list->setBorderRadius(val);
-        plugin.settings()->setValue(keys.result_item_selection_border_radius, val);
-    }
-}
-
-double Window::resultItemSelectionBorderWidth() const { return results_list->borderWidth(); }
-void Window::setResultItemSelectionBorderWidth(double val)
-{
-    if (val != resultItemSelectionBorderWidth())
-    {
-        results_list->setBorderWidth(val);
-        plugin.settings()->setValue(keys.result_item_selection_border_width, val);
-    }
-}
-
-uint Window::resultItemPadding() const { return results_list->padding(); }
-void Window::setResultItemPadding(uint val)
-{
-    if (val != resultItemPadding())
-    {
-        results_list->setPadding(val);
-        plugin.settings()->setValue(keys.result_item_padding, val);
-    }
-}
-
-uint Window::resultItemIconSize() const { return results_list->iconSize(); }
-void Window::setResultItemIconSize(uint val)
-{
-    if (val != resultItemIconSize())
-    {
-        results_list->setIconSize(val);
-        plugin.settings()->setValue(keys.result_item_icon_size, val);
-    }
-}
-
-uint Window::resultItemTextFontSize() const { return results_list->textFontSize(); }
-void Window::setResultItemTextFontSize(uint val)
-{
-    if (val != resultItemTextFontSize())
-    {
-        results_list->setTextFontSize(val);
-        plugin.settings()->setValue(keys.result_item_text_font_size, val);
-    }
-}
-
-uint Window::resultItemSubtextFontSize() const { return results_list->subtextFontSize(); }
-void Window::setResultItemSubtextFontSize(uint val)
-{
-    if (val != resultItemSubtextFontSize())
-    {
-        results_list->setSubtextFontSize(val);
-        plugin.settings()->setValue(keys.result_item_subtext_font_size, val);
-    }
-}
-
-uint Window::resultItemHorizontalSpace() const { return results_list->horizonzalSpacing(); }
-void Window::setResultItemHorizontalSpace(uint val)
-{
-    if (val != resultItemHorizontalSpace())
-    {
-        results_list->setHorizonzalSpacing(val);
-        plugin.settings()->setValue(keys.result_item_horizontal_spacing, val);
-    }
-}
-
-uint Window::resultItemVerticalSpace() const { return results_list->verticalSpacing(); }
-void Window::setResultItemVerticalSpace(uint val)
-{
-    if (val != resultItemVerticalSpace())
-    {
-        results_list->setVerticalSpacing(val);
-        plugin.settings()->setValue(keys.result_item_vertical_spacing, val);
-    }
-}
-
-
-double Window::actionItemSelectionBorderRadius() const { return actions_list->borderRadius(); }
-void Window::setActionItemSelectionBorderRadius(double val)
-{
-    if (val != actionItemSelectionBorderRadius())
-    {
-        actions_list->setBorderRadius(val);
-        plugin.settings()->setValue(keys.action_item_selection_border_radius, val);
-    }
-}
-
-double Window::actionItemSelectionBorderWidth() const { return actions_list->borderWidth(); }
-void Window::setActionItemSelectionBorderWidth(double val)
-{
-    if (val != actionItemSelectionBorderWidth())
-    {
-        actions_list->setBorderWidth(val);
-        plugin.settings()->setValue(keys.action_item_selection_border_width, val);
-    }
-}
-
-uint Window::actionItemPadding() const { return actions_list->padding(); }
-void Window::setActionItemPadding(uint val)
-{
-    if (val != actionItemPadding())
-    {
-        actions_list->setPadding(val);
-        plugin.settings()->setValue(keys.action_item_padding, val);
-    }
-}
-
-uint Window::actionItemFontSize() const { return actions_list->textFontSize(); }
-void Window::setActionItemFontSize(uint val)
-{
-    if (val != actionItemFontSize())
-    {
-        actions_list->setTextFontSize(val);
-        plugin.settings()->setValue(keys.action_item_font_size, val);
-    }
-}
-
-
-
-
-// bool Window::displayClientShadow() const { return graphicsEffect() != nullptr; }
-// void Window::setDisplayClientShadow(bool val)
-// {
-//     if (displayClientShadow() == val)
-//         return;
-
-//     if (val)
-//     {
-//         auto* effect = new QGraphicsDropShadowEffect(this);
-//         effect->setBlurRadius(defaults.window_shadow_size);
-//         effect->setColor(defaults.window_shadow_color);
-//         effect->setXOffset(0.0);
-//         effect->setYOffset(defaults.window_shadow_offset);
-//         setGraphicsEffect(effect);  // takes ownership
-//         setContentsMargins(defaults.window_shadow_size,
-//                            defaults.window_shadow_size - (int)effect->yOffset(),
-//                            defaults.window_shadow_size,
-//                            defaults.window_shadow_size + (int)effect->yOffset());
-//     }
-//     else
-//     {
-//         setGraphicsEffect(nullptr);
-//         setContentsMargins(0,0,0,0);
-//     }
-
-//     plugin.settings()->setValue(keys.shadow_client, val);
-//     emit displayClientShadowChanged(val);
-// }
-
-// bool Window::displaySystemShadow() const
-// { return !windowFlags().testFlag(Qt::NoDropShadowWindowHint); }
-// void Window::setDisplaySystemShadow(bool val)
-// {
-//     if (displaySystemShadow() == val)
-//         return;
-
-//     setWindowFlags(windowFlags().setFlag(Qt::NoDropShadowWindowHint, !val));
-//     plugin.settings()->setValue(keys.shadow_system, val);
-//     emit displaySystemShadowChanged(val);
-// }

@@ -1,15 +1,19 @@
-// Copyright (c) 2022-2025 Manuel Schneider
+// Copyright (c) 2022-2026 Manuel Schneider
 
 #pragma once
 #include "windowframe.h"
 #include <QEvent>
+#include <QFileSystemWatcher>
 #include <QPoint>
 #include <QTimer>
 #include <QWidget>
-namespace albert {
+#include <filesystem>
+
+namespace albert
+{
 class PluginInstance;
 namespace detail { class Query; }
-}
+}  // namespace albert
 class ActionDelegate;
 class ActionsList;
 class DebugOverlay;
@@ -27,7 +31,7 @@ class QStateMachine;
 class ResultItemsModel;
 class ResultsList;
 class SettingsButton;
-class Theme;
+class Style;
 
 class Window : public WindowFrame
 {
@@ -45,26 +49,26 @@ public:
 
     void setQuery(albert::detail::Query *query);
 
-    const std::map<QString, QString> themes;
+    const std::map<QString, std::filesystem::path> styles;
 
     bool darkMode() const;
 
 private:
 
     void initializeUi();
-    void initializeProperties();
     void initializeWindowActions();
     void initializeStatemachine();
     void installEventFilterKeepThisPrioritized(QObject *watched, QObject *filter);
-    std::map<QString, QString> findThemes() const;
-    void applyTheme(const QString& name);  // only for valid names, throws runtime_errors
-    void applyTheme(const Theme &);
+    std::vector<std::filesystem::path> styleDirectories() const;
+    void applyStyle(const QString& name);  // only for valid names, throws runtime_errors
+    void applyStyle(const Style &);
 
     void onSettingsButtonClick(Qt::MouseButton button);
     void onMatchActivation(const QModelIndex &);
     void onMatchActionActivation(const QModelIndex &);
     void onFallbackActivation(const QModelIndex &);
     void onFallbackActionActivation(const QModelIndex &);
+    void onStyleFileChanged();
 
     bool event(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -73,8 +77,6 @@ private:
 
     Frame *input_frame;
     InputLine *input_line;
-    QSpacerItem *spacer_left;
-    QSpacerItem *spacer_right;
     SettingsButton *settings_button;
     ResultsList *results_list;
     ActionsList *actions_list;
@@ -88,13 +90,12 @@ private:
     Mod mod_actions = Mod::Alt;
     Mod mod_fallback = Mod::Meta;
 
-    QString theme_light_;  // null or exists in themes
-    QString theme_dark_;   // null or exists in themes
+    QString style_light_;  // null or exists in styles
+    QString style_dark_;   // null or exists in styles
+    QFileSystemWatcher style_watcher;
     bool hideOnFocusLoss_;
     bool showCentered_;
     bool followCursor_;
-    bool shadow_size_;
-    bool shadow_offset_;
     bool edit_mode_;
     QColor settings_button_color_;
     QColor settings_button_color_highlight_;
@@ -130,11 +131,11 @@ signals:
 
 public:
 
-    const QString &themeLight() const;
-    void setThemeLight(const QString& theme);
+    const QString &styleLight() const;
+    void setStyleLight(const QString& name);
 
-    const QString &themeDark() const;
-    void setThemeDark(const QString& theme);
+    const QString &styleDark() const;
+    void setStyleDark(const QString& name);
 
     bool alwaysOnTop() const;
     void setAlwaysOnTop(bool alwaysOnTop);
@@ -169,80 +170,6 @@ public:
     bool editModeEnabled() const;
     void setEditModeEnabled(bool v);
 
-
-    uint windowShadowSize() const;
-    void setWindowShadowSize(uint);
-
-    uint windowShadowOffset() const;
-    void setWindowShadowOffset(uint);
-
-
-    uint windowWidth() const;
-    void setWindowWidth(uint);
-
-    uint windowPadding() const;
-    void setWindowPadding(uint);
-
-    uint windowSpacing() const;
-    void setWindowSpacing(uint);
-
-    double windowBorderRadius() const;
-    void setWindowBorderRadius(double);
-
-    double windowBorderWidth() const;
-    void setWindowBorderWidth(double);
-
-
-    uint inputPadding() const;
-    void setInputPadding(uint);
-
-    double inputBorderRadius() const;
-    void setInputBorderRadius(double);
-
-    double inputBorderWidth() const;
-    void setInputBorderWidth(double);
-
-    uint inputFontSize() const;
-    void setInputFontSize(uint);
-
-
-    double resultItemSelectionBorderRadius() const;
-    void setResultItemSelectionBorderRadius(double);
-
-    double resultItemSelectionBorderWidth() const;
-    void setResultItemSelectionBorderWidth(double);
-
-    uint resultItemIconSize() const;
-    void setResultItemIconSize(uint);
-
-    uint resultItemTextFontSize() const;
-    void setResultItemTextFontSize(uint);
-
-    uint resultItemSubtextFontSize() const;
-    void setResultItemSubtextFontSize(uint);
-
-    uint resultItemHorizontalSpace() const;
-    void setResultItemHorizontalSpace(uint);
-
-    uint resultItemVerticalSpace() const;
-    void setResultItemVerticalSpace(uint);
-
-    uint resultItemPadding() const;
-    void setResultItemPadding(uint);
-
-
-    double actionItemSelectionBorderRadius() const;
-    void setActionItemSelectionBorderRadius(double);
-
-    double actionItemSelectionBorderWidth() const;
-    void setActionItemSelectionBorderWidth(double);
-
-    uint actionItemFontSize() const;
-    void setActionItemFontSize(uint);
-
-    uint actionItemPadding() const;
-    void setActionItemPadding(uint);
-
 signals:
 
     void alwaysOnTopChanged(bool);
@@ -257,7 +184,7 @@ signals:
     void quitOnCloseChanged(bool);
     void showCenteredChanged(bool);
     void debugModeChanged(bool);
-    void themeDarkChanged(QString);
-    void themeLightChanged(QString);
+    void styleDarkChanged(QString);
+    void styleLightChanged(QString);
     void editModeEnabledChanged(bool);
 };

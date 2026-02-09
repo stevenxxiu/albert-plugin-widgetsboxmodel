@@ -7,31 +7,28 @@ class ResultsListDelegate;
 class ResultsList : public ResizingList
 {
 public:
-
     ResultsList(QWidget *parent = nullptr);
     ~ResultsList();
 
-    QColor subtextColor() const;
-    void setSubtextColor(QColor);
+    int iconSize() const;
+    void setIconSize(int);
 
-    QColor selectionSubtextColor() const;
-    void setSelectionSubextColor(QColor);
+    int subtextFontSize() const;
+    void setSubtextFontSize(int);
 
-    uint iconSize() const;
-    void setIconSize(uint);
+    const QColor &subtextColor() const;
+    void setSubtextColor(const QColor &);
 
-    uint subtextFontSize() const;
-    void setSubtextFontSize(uint);
+    const QColor &selectionSubtextColor() const;
+    void setSelectionSubtextColor(const QColor &);
 
-    uint horizonzalSpacing() const;
-    void setHorizonzalSpacing(uint);
+    int horizontalSpacing() const;
+    void setHorizontalSpacing(int);
 
-    uint verticalSpacing() const;
-    void setVerticalSpacing(uint);
+    int verticalSpacing() const;
+    void setVerticalSpacing(int);
 
 private:
-
     ItemDelegateBase *delegate() const override;
     ResultsListDelegate *delegate_;
-
 };

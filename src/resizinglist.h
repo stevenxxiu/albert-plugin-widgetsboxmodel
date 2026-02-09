@@ -37,26 +37,26 @@ public:
     bool debugMode() const;
     void setDebugMode(bool);
 
-    uint textFontSize() const;
-    void setTextFontSize(uint);
+    int textFontSize() const;
+    void setTextFontSize(int);
 
-    QColor textColor() const;
-    void setTextColor(QColor);
+    const QColor &textColor() const;
+    void setTextColor(const QColor &);
 
-    QColor selectionTextColor() const;
-    void setSelectionTextColor(QColor);
+    const QColor &selectionTextColor() const;
+    void setSelectionTextColor(const QColor &);
 
-    QBrush selectionBackgroundBrush() const;
-    void setSelectionBackgroundBrush(QBrush);
+    const QBrush &selectionBackgroundBrush() const;
+    void setSelectionBackgroundBrush(const QBrush &);
 
-    QBrush selectionBorderBrush() const;
-    void setSelectionBorderBrush(QBrush);
+    const QBrush &selectionBorderBrush() const;
+    void setSelectionBorderBrush(const QBrush &);
 
-    double borderRadius() const;
-    void setBorderRadius(double);
+    double selectionBorderRadius() const;
+    void setSelectionBorderRadius(double);
 
-    double borderWidth() const;
-    void setBorderWidth(double);
+    double selectionBorderWidth() const;
+    void setSelectionBorderWidth(double);
 
     uint padding() const;
     void setPadding(uint);
@@ -72,7 +72,6 @@ public:
 protected:
 
     void onUpdateSelectionAndSize();
-
     void relayout();
 
 private:

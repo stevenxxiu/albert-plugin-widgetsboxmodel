@@ -1,6 +1,6 @@
 // Copyright (c) 2022-2025 Manuel Schneider
 
-#include "themesqueryhandler.h"
+#include "stylesqueryhandler.h"
 #include "window.h"
 #include <albert/icon.h>
 #include <albert/matcher.h>
@@ -10,27 +10,27 @@ using namespace Qt::StringLiterals;
 using namespace albert;
 using namespace std;
 
-ThemesQueryHandler::ThemesQueryHandler(Window *w) : window(w) {}
+StylesQueryHandler::StylesQueryHandler(Window *w) : window(w) {}
 
-QString ThemesQueryHandler::id() const { return u"themes"_s; }
+QString StylesQueryHandler::id() const { return u"styles"_s; }
 
-QString ThemesQueryHandler::name() const { return Window::tr("Themes"); }
+QString StylesQueryHandler::name() const { return Window::tr("Styles"); }
 
-QString ThemesQueryHandler::description() const { return Window::tr("Switch themes"); }
+QString StylesQueryHandler::description() const { return Window::tr("Switch styles"); }
 
 //: The trigger
-QString ThemesQueryHandler::defaultTrigger() const { return Window::tr("themes") + QChar::Space; }
+QString StylesQueryHandler::defaultTrigger() const { return Window::tr("style") + QChar::Space; }
 
-static vector<Action> makeActions(Window *window, const QString& theme_name)
+static vector<Action> makeActions(Window *window, const QString& name)
 {
     vector<Action> actions;
     actions.emplace_back(u"setlight"_s,
                          Window::tr("Use in light mode"),
-                         [window, theme_name]{ window->setThemeLight(theme_name); });
+                         [window, name]{ window->setStyleLight(name); });
 
     actions.emplace_back(u"setdark"_s,
                          Window::tr("Use in dark mode"),
-                         [window, theme_name]{ window->setThemeDark(theme_name); });
+                         [window, name]{ window->setStyleDark(name); });
 
     if (window->darkMode())
         std::swap(actions[0], actions[1]);
@@ -40,28 +40,34 @@ static vector<Action> makeActions(Window *window, const QString& theme_name)
 
 static unique_ptr<Icon> makeIcon() { return Icon::grapheme(u"🎨"_s); }
 
-vector<RankItem> ThemesQueryHandler::rankItems(QueryContext &ctx)
+vector<RankItem> StylesQueryHandler::rankItems(QueryContext &ctx)
 {
     Matcher matcher(ctx);
     vector<RankItem> items;
     const auto sytem_title = Window::tr("System");
 
     if (const auto m = matcher.match(sytem_title); m)
-        items.emplace_back(StandardItem::make(u"system_theme"_s,
+        items.emplace_back(StandardItem::make(u"default"_s,
                                               sytem_title,
-                                              Window::tr("The system theme."),
+                                              Window::tr("The default style."),
                                               makeIcon,
                                               makeActions(window, {})),
                            m);
 
-    for (const auto &[name, path] : window->themes)
+    for (const auto &[name, path] : window->styles)
         if (const auto m = matcher.match(name); m)
         {
             auto actions = makeActions(window, name);
-            actions.emplace_back(u"open"_s, Window::tr("Open theme file"), [path] { open(path); });
-            items.emplace_back(StandardItem::make(u"theme_%1"_s.arg(name),
+
+            actions.emplace_back(u"open"_s, Window::tr("Open"),
+                                 [path] { open(path); });
+
+            actions.emplace_back(u"open"_s, Window::tr("Reveal in file manager"),
+                                 [path] { open(path.parent_path()); });
+
+            items.emplace_back(StandardItem::make(u"style_%1"_s.arg(name),
                                                   name,
-                                                  path,
+                                                  toQString(path),
                                                   makeIcon,
                                                   ::move(actions)),
                                m);

@@ -7,6 +7,7 @@
 #include <QSignalBlocker>
 #include <QSyntaxHighlighter>
 #include <albert/logging.h>
+using namespace Qt::StringLiterals;
 
 class InputLine::TriggerHighlighter : public QSyntaxHighlighter
 {
@@ -152,38 +153,6 @@ void InputLine::setText(QString t)
     connect(this, &QPlainTextEdit::textChanged, this, &InputLine::textEdited);
 }
 
-uint InputLine::fontSize() const { return font().pointSize(); }
-
-void InputLine::setFontSize(uint val)
-{
-    auto f = font();
-    f.setPointSize(val);
-    setFont(f);
-    highlighter_->rehighlight(); // required because it sets hint advance
-
-    // setFixedHeight(fontMetrics().lineSpacing() + 2 * (int)document()->documentMargin());
-}
-
-QColor InputLine::triggerColor() const { return trigger_color_; }
-
-void InputLine::setTriggerColor(const QColor &val)
-{
-    if (trigger_color_ == val)
-        return;
-    trigger_color_ = val;
-    highlighter_->rehighlight();
-}
-
-QColor InputLine::hintColor() const { return hint_color_; }
-
-void InputLine::setHintColor(const QColor &val)
-{
-    if (hint_color_ == val)
-        return;
-    hint_color_ = val;
-    update();
-}
-
 void InputLine::next()
 {
     if (auto t = history_.next(history_search ? user_text_ : QString());
@@ -220,7 +189,7 @@ void InputLine::paintEvent(QPaintEvent *event)
         }
 
         QPainter p(viewport());
-        p.setPen(hint_color_);
+        p.setPen(input_action_color_);
         p.drawText(r, Qt::TextSingleLine, c);
 
         if (synopsis_.length() > 0)
@@ -228,6 +197,7 @@ void InputLine::paintEvent(QPaintEvent *event)
             auto f = font();
             f.setWeight(QFont::Light);
             p.setFont(f);
+            p.setPen(input_hint_color_);
             if (fontMetrics().horizontalAdvance(synopsis()) + c_width < r.width())
                 p.drawText(r.adjusted(c_width, 0, 0, 0),
                            Qt::TextSingleLine | Qt::AlignRight,
@@ -294,4 +264,58 @@ void InputLine::inputMethodEvent(QInputMethodEvent *event)
     }
     else
         QPlainTextEdit::inputMethodEvent(event);
+}
+
+int InputLine::fontSize() const { return font().pointSize(); }
+
+void InputLine::setFontSize(int v)
+{
+    if (font().pointSize() != v)
+    {
+        auto f = font();
+        f.setPointSize(v);
+        setFont(f);
+        // setFixedHeight(fontMetrics().lineSpacing() + 2 * (int)document()->documentMargin());
+
+        // Fix for nicely aligned text.
+        // The text should be idented by the distance of the cap line to the top.
+        auto fm = fontMetrics();
+        auto font_margin_fix = (fm.lineSpacing() - fm.capHeight()
+                                - fm.tightBoundingRect(u"|"_s).width())/2;
+
+        // 1px document margins
+        setViewportMargins(font_margin_fix, 0, font_margin_fix, 0);
+
+        highlighter_->rehighlight(); // required because it sets hint advance, updates
+    }
+}
+
+const QColor &InputLine::triggerColor() const { return trigger_color_; }
+
+void InputLine::setTriggerColor(const QColor &v)
+{
+    if (trigger_color_ == v)
+        return;
+    trigger_color_ = v;
+    highlighter_->rehighlight();  // updates
+}
+
+const QColor &InputLine::inputActionColor() const { return input_action_color_; }
+
+void InputLine::setInputActionColor(const QColor &v)
+{
+    if (input_action_color_ == v)
+        return;
+    input_action_color_ = v;
+    update();
+}
+
+const QColor &InputLine::inputHintColor() const { return input_hint_color_; }
+
+void InputLine::setInputHintColor(const QColor &v)
+{
+    if (input_hint_color_ == v)
+        return;
+    input_hint_color_ = v;
+    update();
 }

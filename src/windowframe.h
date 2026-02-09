@@ -6,39 +6,27 @@
 
 class WindowFrame : public Frame
 {
-    Q_OBJECT
-    Q_PROPERTY(uint shadowSize READ shadowSize WRITE setShadowSize NOTIFY shadowSizeChanged FINAL)
-    Q_PROPERTY(uint shadowOffset READ shadowOffset WRITE setShadowOffset NOTIFY shadowOffsetChanged FINAL)
-    Q_PROPERTY(QBrush shadowBrush READ shadowBrush WRITE setShadowBrush NOTIFY shadowBrushChanged FINAL)
-
 public:
 
     WindowFrame(QWidget *parent = nullptr);
 
     uint shadowSize() const;
-    void setShadowSize(uint val);
+    void setShadowSize(uint);
 
     uint shadowOffset() const;
-    void setShadowOffset(uint val);
+    void setShadowOffset(uint);
 
     QBrush shadowBrush() const;
-    void setShadowBrush(QBrush val);
+    void setShadowBrush(const QBrush &);
 
-protected:
+private:
 
     bool event(QEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     QString cacheKey() const;
-    void onPropertiesChanged();
 
     uint shadow_size_;
     uint shadow_offset_;
     QBrush shadow_brush_;
-
-signals:
-
-    void shadowSizeChanged(uint);
-    void shadowOffsetChanged(uint);
-    void shadowBrushChanged(QBrush);
 
 };

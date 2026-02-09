@@ -56,12 +56,20 @@
         <translation>Fenster auf dem aktiven Bildschirm (dem mit dem Mauszeiger) anzeigen, anstatt auf dem primären Bildschirm. Diese Option gilt, wenn &quot;Zentriert anzeigen&quot; aktiviert ist, aber auch, wenn das Fenster auf einem anderen Bildschirm zentriert werden muss (z.B. weil ein Bildschirm getrennt wurde).</translation>
     </message>
     <message>
-        <source>Light theme</source>
-        <translation>Helles Thema</translation>
+        <source>Light style</source>
+        <translation>Heller Stil</translation>
     </message>
     <message>
-        <source>Set the color theme used in light mode.</source>
-        <translation>Das Farbthema des hellen Modus festlegen.</translation>
+        <source>Set the style used in light mode.</source>
+        <translation>Den Stil des hellen Modus festlegen.</translation>
+    </message>
+    <message>
+        <source>Dark style</source>
+        <translation>Dunkler Stil</translation>
+    </message>
+    <message>
+        <source>Set the style used in dark mode.</source>
+        <translation>Den Stil des dunklen Modus festlegen.</translation>
     </message>
     <message>
         <source>Displayed items</source>
@@ -76,14 +84,6 @@
         <translation>Zeigt einen Scrollbalken in der Ergebnisliste an.</translation>
     </message>
     <message>
-        <source>Set the color theme used in dark mode.</source>
-        <translation>Das Farbthema des dunklen Modus festlegen.</translation>
-    </message>
-    <message>
-        <source>Dark theme</source>
-        <translation>Dunkles Thema</translation>
-    </message>
-    <message>
         <source>Debug mode</source>
         <translation>Debug-Modus</translation>
     </message>
@@ -92,95 +92,24 @@
         <translation>Eingabemethode deaktivieren</translation>
     </message>
     <message>
-        <source>Window properties</source>
-        <translation>Fenstereigenschaften</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Bearbeiten</translation>
-    </message>
-    <message>
         <source>System</source>
         <translation>System</translation>
-    </message>
-    <message>
-        <source>Window</source>
-        <translation>Fenster</translation>
-    </message>
-    <message>
-        <source>Shadow size</source>
-        <translation>Schatten­größe</translation>
-    </message>
-    <message>
-        <source>Shadow offset</source>
-        <translation>Schattenversatz</translation>
-    </message>
-    <message>
-        <source>Width</source>
-        <translation>Breite</translation>
-    </message>
-    <message>
-        <source>Border radius</source>
-        <translation>Rahmenradius</translation>
-    </message>
-    <message>
-        <source>Border width</source>
-        <translation>Rahmenbreite</translation>
-    </message>
-    <message>
-        <source>Padding</source>
-        <translation>Innenabstand</translation>
-    </message>
-    <message>
-        <source>Spacing</source>
-        <translation>Abstand</translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation>Eingabe</translation>
-    </message>
-    <message>
-        <source>Font size</source>
-        <translation>Schriftgröße</translation>
-    </message>
-    <message>
-        <source>Results</source>
-        <translation>Ergebnisse</translation>
-    </message>
-    <message>
-        <source>Description font size</source>
-        <translation>Schriftgröße der Beschreibung</translation>
-    </message>
-    <message>
-        <source>Selection border radius</source>
-        <translation>Auswahl-Rahmenradius</translation>
-    </message>
-    <message>
-        <source>Selection border width</source>
-        <translation>Auswahl-Rahmenbreite</translation>
-    </message>
-    <message>
-        <source>Icon size</source>
-        <translation>Symbolgröße</translation>
-    </message>
-    <message>
-        <source>Horizontal spacing</source>
-        <translation>Horizontaler Abstand</translation>
-    </message>
-    <message>
-        <source>Vertical spacing</source>
-        <translation>Vertikaler Abstand</translation>
-    </message>
-    <message>
-        <source>Actions</source>
-        <translation>Aktionen</translation>
     </message>
 </context>
 <context>
     <name>Window</name>
     <message>
-        <source>Switch themes</source>
-        <translation>Wechsle Themen</translation>
+        <source>Styles</source>
+        <translation>Stile</translation>
+    </message>
+    <message>
+        <source>Switch styles</source>
+        <translation>Wechsle Stile</translation>
+    </message>
+    <message>
+        <source>style</source>
+        <extracomment>The trigger</extracomment>
+        <translation>stil</translation>
     </message>
     <message>
         <source>Use in light mode</source>
@@ -191,8 +120,20 @@
         <translation>Im dunklen Modus verwenden</translation>
     </message>
     <message>
-        <source>Open theme file</source>
-        <translation>Themendatei öffnen</translation>
+        <source>System</source>
+        <translation>System</translation>
+    </message>
+    <message>
+        <source>The default style.</source>
+        <translation>Der Standardstil.</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation>Öffnen</translation>
+    </message>
+    <message>
+        <source>Reveal in file manager</source>
+        <translation>Im Dateimanager anzeigen</translation>
     </message>
     <message>
         <source>Settings</source>
@@ -211,33 +152,16 @@
         <translation>Eingabezeile beim Ausblenden leeren</translation>
     </message>
     <message>
-        <source>Debug mode</source>
-        <translation>Debug-Modus</translation>
-    </message>
-    <message>
-        <source>System</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>The system theme.</source>
-        <translation>Das Systemthema.</translation>
-    </message>
-    <message>
         <source>Input edit mode</source>
         <translation>Eingabebearbeitungsmodus</translation>
     </message>
     <message>
-        <source>Failed loading theme</source>
-        <translation>Laden des Themas fehlgeschlagen</translation>
+        <source>Debug mode</source>
+        <translation>Debug-Modus</translation>
     </message>
     <message>
-        <source>Themes</source>
-        <translation>Themen</translation>
-    </message>
-    <message>
-        <source>themes</source>
-        <extracomment>The trigger</extracomment>
-        <translation>themen</translation>
+        <source>Failed loading style</source>
+        <translation>Laden des Stils fehlgeschlagen</translation>
     </message>
 </context>
 </TS>

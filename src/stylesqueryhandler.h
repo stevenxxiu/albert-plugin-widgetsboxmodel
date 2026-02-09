@@ -4,10 +4,10 @@
 #include <albert/rankedqueryhandler.h>
 class Window;
 
-class ThemesQueryHandler : public albert::RankedQueryHandler
+class StylesQueryHandler : public albert::RankedQueryHandler
 {
 public:
-    ThemesQueryHandler(Window *w);
+    StylesQueryHandler(Window *w);
     QString id() const override;
     QString name() const override;
     QString description() const override;

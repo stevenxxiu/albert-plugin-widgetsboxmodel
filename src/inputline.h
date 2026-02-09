@@ -24,14 +24,17 @@ public:
     QString text() const;
     void setText(QString);
 
-    uint fontSize() const;
-    void setFontSize(uint);
+    int fontSize() const;
+    void setFontSize(int);
 
-    QColor triggerColor() const;
+    const QColor &triggerColor() const;
     void setTriggerColor(const QColor &);
 
-    QColor hintColor() const;
-    void setHintColor(const QColor &);
+    const QColor &inputActionColor() const;
+    void setInputActionColor(const QColor &);
+
+    const QColor &inputHintColor() const;
+    void setInputHintColor(const QColor &);
 
     void next();
     void previous();
@@ -54,8 +57,11 @@ private:
     uint trigger_length_;
     class TriggerHighlighter;
     TriggerHighlighter *highlighter_;
-    QColor hint_color_;
+
+    // Style
     QColor trigger_color_;
+    QColor input_action_color_;
+    QColor input_hint_color_;
 
 signals:
 

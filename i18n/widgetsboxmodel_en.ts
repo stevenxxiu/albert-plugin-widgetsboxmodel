@@ -56,19 +56,19 @@
         <translation></translation>
     </message>
     <message>
-        <source>Light theme</source>
+        <source>Light style</source>
         <translation></translation>
     </message>
     <message>
-        <source>Set the color theme used in light mode.</source>
+        <source>Set the style used in light mode.</source>
         <translation></translation>
     </message>
     <message>
-        <source>Dark theme</source>
+        <source>Dark style</source>
         <translation></translation>
     </message>
     <message>
-        <source>Set the color theme used in dark mode.</source>
+        <source>Set the style used in dark mode.</source>
         <translation></translation>
     </message>
     <message>
@@ -92,94 +92,23 @@
         <translation></translation>
     </message>
     <message>
-        <source>Window properties</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>System</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Window</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Shadow size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Shadow offset</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Width</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Border radius</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Border width</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Padding</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Spacing</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Font size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Results</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Description font size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Selection border radius</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Selection border width</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Icon size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Horizontal spacing</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Vertical spacing</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Actions</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>Window</name>
     <message>
-        <source>Switch themes</source>
+        <source>Styles</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Switch styles</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>style</source>
+        <extracomment>The trigger</extracomment>
         <translation></translation>
     </message>
     <message>
@@ -191,7 +120,15 @@
         <translation></translation>
     </message>
     <message>
-        <source>Open theme file</source>
+        <source>The default style.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Reveal in file manager</source>
         <translation></translation>
     </message>
     <message>
@@ -215,28 +152,15 @@
         <translation></translation>
     </message>
     <message>
+        <source>Failed loading style</source>
+        <translation></translation>
+    </message>
+    <message>
         <source>System</source>
         <translation></translation>
     </message>
     <message>
-        <source>The system theme.</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Input edit mode</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Failed loading theme</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Themes</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>themes</source>
-        <extracomment>The trigger</extracomment>
         <translation></translation>
     </message>
 </context>

@@ -9,13 +9,13 @@ using namespace std;
 
 Plugin::Plugin() :
     window(*this),
-    themes_query_handler(&window)
+    styles_query_handler(&window)
 {
     connect(&window, &Window::inputChanged, this, &Plugin::inputChanged);
     connect(&window, &Window::visibleChanged, this, &Plugin::visibleChanged);
 }
 
-vector<Extension *> Plugin::extensions() { return {&themes_query_handler}; }
+vector<Extension *> Plugin::extensions() { return {&styles_query_handler}; }
 
 QString Plugin::input() const { return window.input(); }
 

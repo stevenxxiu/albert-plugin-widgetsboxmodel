@@ -166,7 +166,7 @@
     </widget>
    </item>
    <item row="6" column="0">
-    <widget class="QLabel" name="label_theme_light">
+    <widget class="QLabel" name="label_style_light">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -174,15 +174,15 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Light theme</string>
+      <string>Light style</string>
      </property>
      <property name="buddy">
-      <cstring>comboBox_theme_light</cstring>
+      <cstring>comboBox_style_light</cstring>
      </property>
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QComboBox" name="comboBox_theme_light">
+    <widget class="QComboBox" name="comboBox_style_light">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -190,22 +190,22 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>Set the color theme used in light mode.</string>
+      <string>Set the style used in light mode.</string>
      </property>
     </widget>
    </item>
    <item row="7" column="0">
-    <widget class="QLabel" name="label_theme_dark">
+    <widget class="QLabel" name="label_style_dark">
      <property name="text">
-      <string>Dark theme</string>
+      <string>Dark style</string>
      </property>
      <property name="buddy">
-      <cstring>comboBox_theme_dark</cstring>
+      <cstring>comboBox_style_dark</cstring>
      </property>
     </widget>
    </item>
    <item row="7" column="1">
-    <widget class="QComboBox" name="comboBox_theme_dark">
+    <widget class="QComboBox" name="comboBox_style_dark">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -213,7 +213,7 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>Set the color theme used in dark mode.</string>
+      <string>Set the style used in dark mode.</string>
      </property>
     </widget>
    </item>
@@ -324,29 +324,6 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
-    <widget class="QLabel" name="label_winprop">
-     <property name="text">
-      <string>Window properties</string>
-     </property>
-     <property name="buddy">
-      <cstring>pushButton_winprop</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="1">
-    <widget class="QPushButton" name="pushButton_winprop">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Edit</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <tabstops>
@@ -356,8 +333,8 @@
   <tabstop>checkBox_hideOnFocusOut</tabstop>
   <tabstop>checkBox_center</tabstop>
   <tabstop>checkBox_followCursor</tabstop>
-  <tabstop>comboBox_theme_light</tabstop>
-  <tabstop>comboBox_theme_dark</tabstop>
+  <tabstop>comboBox_style_light</tabstop>
+  <tabstop>comboBox_style_dark</tabstop>
   <tabstop>spinBox_results</tabstop>
   <tabstop>checkBox_scrollbar</tabstop>
  </tabstops>

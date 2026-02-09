@@ -4,82 +4,22 @@
 #include "primitives.h"
 #include <QPaintEvent>
 
-Frame::Frame(QWidget *parent):
+Frame::Frame(QWidget *parent) :
     QWidget(parent),
-    border_brush_(Qt::transparent),
-    fill_brush_(palette().color(QPalette::Window)),
+    background_brush_(palette().color(QPalette::Window)),
+    border_radius_(0),
     border_width_(0),
-    radius_(0)
+    border_brush_(Qt::transparent)
 {
     setMinimumSize(0,0);
-}
-
-double Frame::borderWidth() const
-{
-    return border_width_;
-}
-
-void Frame::setBorderWidth(double boarderWidth)
-{
-    if (border_width_ == boarderWidth)
-        return;
-
-    border_width_ = boarderWidth;
-    update();
-    emit borderWidthChanged(border_width_);
-}
-
-double Frame::radius() const
-{
-    return radius_;
-}
-
-void Frame::setRadius(double radius)
-{
-    if (radius_ == radius)
-        return;
-
-    radius_ = radius;
-    update();
-    emit radiusChanged(radius_);
-}
-
-QBrush Frame::fillBrush() const
-{
-    return fill_brush_;
-}
-
-void Frame::setFillBrush(QBrush fillBrush)
-{
-    if (fill_brush_ == fillBrush)
-        return;
-
-    fill_brush_ = fillBrush;
-    update();
-    emit fillBrushChanged(fill_brush_);
-}
-
-QBrush Frame::borderBrush() const
-{
-    return border_brush_;
-}
-
-void Frame::setBorderBrush(QBrush boarderBrush)
-{
-    if (border_brush_ == boarderBrush)
-        return;
-
-    border_brush_ = boarderBrush;
-    update();
-    emit borderBrushChanged(border_brush_);
 }
 
 void Frame::paintEvent(QPaintEvent*)
 {
     auto dpr = devicePixelRatioF();
     QPixmap pm = pixelPerfectRoundedRect(size() * dpr,
-                                         fill_brush_,
-                                         (int)(radius_ * dpr),
+                                         background_brush_,
+                                         (int)(border_radius_ * dpr),
                                          border_brush_,
                                          (int)(border_width_ * dpr));
     pm.setDevicePixelRatio(dpr);
@@ -89,3 +29,43 @@ void Frame::paintEvent(QPaintEvent*)
 }
 
 QSize Frame::minimumSizeHint() const { return {-1, -1}; }
+
+const QBrush &Frame::backgroundBrush() const { return background_brush_; }
+
+void Frame::setBackgroundBrush(const QBrush &v)
+{
+    if (background_brush_ == v)
+        return;
+    background_brush_ = v;
+    update();
+}
+
+const QBrush &Frame::borderBrush() const { return border_brush_; }
+
+void Frame::setBorderBrush(const QBrush &v)
+{
+    if (border_brush_ == v)
+        return;
+    border_brush_ = v;
+    update();
+}
+
+double Frame::borderRadius() const { return border_radius_; }
+
+void Frame::setBorderRadius(double v)
+{
+    if (border_radius_ == v)
+        return;
+    border_radius_ = v;
+    update();
+}
+
+double Frame::borderWidth() const { return border_width_; }
+
+void Frame::setBorderWidth(double v)
+{
+    if (border_width_ == v)
+        return;
+    border_width_ = v;
+    update();
+}

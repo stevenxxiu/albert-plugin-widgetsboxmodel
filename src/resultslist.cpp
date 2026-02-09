@@ -45,35 +45,6 @@ ResultsList::~ResultsList() { delete delegate_; }
 
 ItemDelegateBase *ResultsList::delegate() const { return delegate_; }
 
-uint ResultsList::subtextFontSize() const { return delegate_->subtext_font.pointSize(); }
-
-void ResultsList::setSubtextFontSize(uint v)
-{
-    delegate_->subtext_font.setPointSize(v);
-    delegate_->subtext_font_metrics = QFontMetrics(delegate_->subtext_font);
-    relayout();
-}
-
-QColor ResultsList::subtextColor() const { return delegate_->subtext_color; }
-
-void ResultsList::setSubtextColor(QColor v) { delegate_->subtext_color = v; update(); }
-
-QColor ResultsList::selectionSubtextColor() const { return delegate_->selection_subtext_color; }
-
-void ResultsList::setSelectionSubextColor(QColor v) { delegate_->selection_subtext_color = v; update(); }
-
-uint ResultsList::horizonzalSpacing() const { return delegate_->horizontal_spacing; }
-
-void ResultsList::setHorizonzalSpacing(uint v) { delegate_->horizontal_spacing = v; relayout(); }
-
-uint ResultsList::verticalSpacing() const { return delegate_->vertical_spacing; }
-
-void ResultsList::setVerticalSpacing(uint v) { delegate_->vertical_spacing = v; relayout(); }
-
-uint ResultsList::iconSize() const { return delegate_->icon_size; }
-
-void ResultsList::setIconSize(uint v) { delegate_->icon_size = v; relayout(); }
-
 //--------------------------------------------------------------------------------------------------
 
 ResultsListDelegate::ResultsListDelegate():
@@ -199,4 +170,66 @@ void ResultsListDelegate::paint(QPainter *p,
     }
 
     p->restore();
+}
+
+int ResultsList::iconSize() const { return delegate_->icon_size; }
+
+void ResultsList::setIconSize(int v)
+{
+    if (delegate_->icon_size == v)
+        return;
+    delegate_->icon_size = v;
+    relayout();
+}
+
+int ResultsList::subtextFontSize() const { return delegate_->subtext_font.pointSize(); }
+
+void ResultsList::setSubtextFontSize(int v)
+{
+    if (delegate_->subtext_font.pointSize() == v)
+        return;
+    delegate_->subtext_font.setPointSize(v);
+    delegate_->subtext_font_metrics = QFontMetrics(delegate_->subtext_font);
+    relayout();
+}
+
+const QColor &ResultsList::subtextColor() const { return delegate_->subtext_color; }
+
+void ResultsList::setSubtextColor(const QColor &v)
+{
+    if (delegate_->subtext_color == v)
+        return;
+    delegate_->subtext_color = v;
+    update();
+}
+
+const QColor &ResultsList::selectionSubtextColor() const
+{ return delegate_->selection_subtext_color; }
+
+void ResultsList::setSelectionSubtextColor(const QColor &v)
+{
+    if (delegate_->selection_subtext_color == v)
+        return;
+    delegate_->selection_subtext_color = v;
+    update();
+}
+
+int ResultsList::horizontalSpacing() const { return delegate_->horizontal_spacing; }
+
+void ResultsList::setHorizontalSpacing(int v)
+{
+    if (delegate_->horizontal_spacing == v)
+        return;
+    delegate_->horizontal_spacing = v;
+    relayout();
+}
+
+int ResultsList::verticalSpacing() const { return delegate_->vertical_spacing; }
+
+void ResultsList::setVerticalSpacing(int v)
+{
+    if (delegate_->vertical_spacing == v)
+        return;
+    delegate_->vertical_spacing = v;
+    relayout();
 }

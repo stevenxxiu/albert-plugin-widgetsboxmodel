@@ -1,8 +1,8 @@
-// Copyright (c) 2022-2025 Manuel Schneider
+// Copyright (c) 2022-2026 Manuel Schneider
 
 #pragma once
 
-#include "themesqueryhandler.h"
+#include "stylesqueryhandler.h"
 #include "window.h"
 #include <QString>
 #include <albert/frontend.h>
@@ -28,6 +28,6 @@ public:
 private:
 
     Window window;
-    ThemesQueryHandler themes_query_handler;
+    StylesQueryHandler styles_query_handler;
 
 };

@@ -5,18 +5,20 @@ The official frontend for Albert.
 ---
 ---
 
-**NOTE**: The themeing feature is in development. Expect things to break. ⚠️🚧
+**NOTE**: The styling feature is in development. Expect things to break. ⚠️🚧
 
-However, if you are keen on themeing, feedback is highly appreciated. 
+However, if you are keen on styling, feedback is highly appreciated. 
 Join the communtiy chats and discuss.
 
 ---
 ---
 
 
-## Theming (v0.0)
+## Styleing (v0.0)
 
-A theme is an INI-style plain-text file containing grouped key–value pairs.
+A style is an INI-formated plain-text file containing grouped key–value pairs.
+Values of other keys can be referenced by the name of the key preceeded by a dollar sign '$'.
+
 
 The `palette` group is used to derive colors for general widget drawing.
 All keys in this group represent colors.
@@ -24,7 +26,7 @@ The `window` group is used to explicitly override window colors.
 Depending on the key names in this group, values are expected to be colors or brushes.
 The unnamed root group can be used to define variables that you may want to reference later.
 
-Besides the shipped themes, you can find a theme template file in the system data directory.
+Besides the shipped styles, you can find a style template file in the system data directory.
 It contains the supported keys for each group, along with a description.
 
 
@@ -77,5 +79,22 @@ linear-gradient(x1:<double>, y1:<double>,    # Gradient start point
 See https://doc.qt.io/qt-6/qlineargradient.html
 
 
+##### Images
 
+```
+image(src:<path>)  # Gradient start point
+```
+
+- ***src***:
+  Absolute path or relative path to the style file. 
+
+### Useful tools 
+
+- https://paletton.com/
+- https://www.fffuel.co/
+- https://pattern.monster/
+- https://webgradients.com/
+- https://bgjar.com/
+- https://www.svgbackgrounds.com/set/free-svg-backgrounds-and-patterns/
+- Feel free to add resources here!
 
